@@ -13,6 +13,7 @@
 # limitations under the License.
 
 import webapp2
+import cgi
 
 form = """
 <form method="post">
@@ -20,16 +21,19 @@ form = """
   What is your birthday?<br>
 
   <label for="">Month
-    <input type="text" name="month">
+    <input type="text" name="month" value="%(month)s">
   </label>
 
   <label for="">Day 
-    <input type="text" name="day">
+    <input type="text" name="day" value="%(day)s">
   </label>
 
   <label for="">Year
-    <input type="text" name="year">
+    <input type="text" name="year" value="%(year)s">
   </label>
+
+  <div style="color: red;">%(error)s</div>
+
   <br>
   <br>
   <input type="submit">
@@ -78,20 +82,43 @@ def valid_year(year):
             return yr
 
 
+# def escape_html(s):
+#     for (i, o) in (("&", "&amp;"), (">", "&gt;"), ("<", "&lt;"), ('"', '&quot;')):
+#         s = s.replace(i, o)
+#     return s
+
+def escape_html(s):
+    return cgi.escape(s, quote=True)
+
+
 class MainPage(webapp2.RequestHandler):
+    def write_form(self, error="", month="", day="", year=""):
+        self.response.out.write(form % {
+            "error": error,
+            "month": escape_html(month),
+            "day": escape_html(day),
+            "year": escape_html(year)
+        })
+    
     def get(self):
         # self.response.headers['Content-Type'] = 'text/plain'
-        self.response.out.write(form)
+        self.write_form()
 
     def post(self):
-        user_month = valid_month(self.request.get('month'))
-        user_day = valid_day(self.request.get('day'))
-        user_year = valid_year(self.request.get('year'))
-        if not (user_day and user_month and user_year):
-            self.response.out.write(form)
+        user_month = self.request.get('month')
+        user_day = self.request.get('day')
+        user_year = self.request.get('year')
+
+        month = valid_month(user_month)
+        day = valid_day(user_day)
+        year = valid_year(user_year)
+
+        if not (day and month and year):
+            self.write_form("That doesn't look valid to me, friend.",
+            user_month, user_day, user_year)
             # self.response.out.write('Thanks! Form submitted :)')            
         else:
-            self.response.out.write('Thanks! Form submitted :)')
+            self.redirect('/thanks')
 
 
 # class TestHandler(webapp2.RequestHandler):
@@ -102,6 +129,12 @@ class MainPage(webapp2.RequestHandler):
 #         self.response.out.write(self.request)
 
 
+class ThanksHandler(webapp2.RequestHandler):
+    def get(self):
+        self.response.out.write("Thanks! That's a totally valid day!")
+
+
 app = webapp2.WSGIApplication([
-    ('/', MainPage)
+    ('/', MainPage),
+    ('/thanks', ThanksHandler)
 ], debug=True)
