@@ -1,0 +1,12 @@
+application: template-lesson
+runtime: python27
+api_version: 1
+threadsafe: true
+
+handlers:
+- url: /.*
+  script: templates.app
+
+libraries:
+- name: jinja2
+  version: latest
