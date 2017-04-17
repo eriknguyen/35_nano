@@ -1,0 +1,29 @@
+<form action="" method="post">
+    <div class="">
+        <label for="username">Name:
+            <input type="text" name="username" value="{{ data.name_value | escape }}">
+        </label>
+        <span>{{ data.name_err }}</span>
+    </div>
+    <div class="">
+        <label for="password">Password
+            <input type="password" name="password">
+        </label>
+        <span>{{ data.pwd_err }}</span>
+    </div>
+    <div class="">
+        <label for="verify">Verified password
+            <input type="password" name="verify">
+        <span>{{ data.vpassword_err }}</span>
+        </label>
+    </div>
+    <div class="">
+        <label for="email">Email (optional)
+            <input type="email" name="email" value="{{ data.email_value | escape }}">
+        </label>
+        <span>{{ data.email_err }}</span>
+    </div>
+    <div class="">
+    	<input type="submit" value="Submit">
+    </div>
+</form>

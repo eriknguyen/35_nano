@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>/ascii/</title>
+	<link rel="stylesheet" href="">
+</head>
+
+<style type="text/css">
+	body {
+		font-family: sans-serif;
+		width: 800px;
+		margin: 0 auto;
+		padding: 10px;
+	}
+
+	.error {
+		color: red;
+	}
+
+	label {
+		display: block;
+		font-size: 20px;
+	}
+
+	input[type="text"] {
+		width: 400px;
+		font-size: 20px;
+		padding: 2px;
+	}
+
+	textarea {
+		width: 400px;
+		height: 200px;
+		font-size: 17px;
+		font-family: monospace;
+	}
+
+	input[type="submit"] {
+		font-size: 24px;
+	}
+
+	hr {
+		margin: 20px auto;
+	}
+
+	.art + .art {
+		margin-top: 20px;
+	}
+
+	.art-title {
+		font-weight: bold;
+		font-size: 20px;
+	}
+
+	.art-body {
+		font-size: 17px;
+		margin: 0;
+	}
+
+</style>
+
+<body>
+
+	<div>
+		<a href="/blog">
+		<h1>Add new blog</h1></a>
+	</div>
+
+	<form method="post">
+		<div>
+			<label for="subject">
+				<div>Title</div>
+				<input type="text" name="subject" value="{{ subject }}">
+			</label>
+		</div>
+		<div>
+			<label for="content">
+				<div class="">Art</div>
+				<textarea name="content">{{ content }}</textarea>
+			</label>
+		</div>
+		<div class="error">{{error}}</div>
+		<input type="submit">
+	</form>
+	
+</body>
+</html>
