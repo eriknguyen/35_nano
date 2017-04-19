@@ -1,3 +1,4 @@
 res
 **/__pycache__
 .vscode
+.idea/
