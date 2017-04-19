@@ -122,6 +122,21 @@ class RegisterHandler(Handler):
             print("name error")
             data.update({'name_err': 'Name error'})
             any_error = True
+        # else:
+        #     query_str = "SELECT * FROM User WHERE username = '%s'" % user_name
+        #     check_user = db.GqlQuery(query_str)
+        #     print("check_user")
+        #     print(query_str)
+        #     print(check_user)
+        #     print(check_user.username)
+        #     print(check_user.password)
+        #     print("end check_user")
+        #     # need other way to check if record existed
+        #     if check_user:
+        #         data.update({
+        #             'name_err': 'Username already existed'
+        #             })
+        #         any_error = True
         if not validate_password(user_pwd):
             print("password error")
             data.update({'pwd_err': 'Password error'})
@@ -135,23 +150,16 @@ class RegisterHandler(Handler):
             data.update({'email_err': 'Invalid email'})
             any_error = True
 
-        check_user = db.GqlQuery("SELECT * FROM User WHERE username = "+user_name)
-        if check_user:
-            data.update({
-                'name_err': 'Username already existed'
-                })
-            any_error = True
-
         if any_error:
             self.render('register.html', data=data)
         else:
             # store new user
             salt = make_salt()
             new_user = User(username=user_name,
-                password=make_pw_hash(username, user_pwd, salt),
+                password=make_pw_hash(user_name, user_pwd, salt),
                 salt=salt)
             new_user.put()
-            print("user saved", user.username)
+            print("user saved", new_user.username)
 
             # redirect to welcome page
             new_cookie_val = make_secure_val(str(user_name))
@@ -159,22 +167,37 @@ class RegisterHandler(Handler):
             self.redirect('/welcome')
 
 
-class ThankyouHandler(Handler):
+class SigninHandler(Handler):
+    def get(self):
+        data = {}
+        self.render('signin.html', data=data)
+
+    def post(self):
+        data = {}
+        self.write("yay")
+
+
+class WelcomeHandler(Handler):
     def get(self):
         user_cookie_str = self.request.cookies.get('user_id')
         if user_cookie_str:
             cookie_val = check_secure_val(user_cookie_str)
+            print("cookie_val = ", cookie_val)
             if cookie_val:
+                print("check_secure_val passed")
                 username = cookie_val
                 print("cookie_val is", username)
                 self.render("welcome.html", username=username)
             else:
+                print("check_secure_val failed")
                 self.redirect('/signup')
         else:
+            print("no cookie val")
             self.redirect('/signup')
 
 
 app = webapp2.WSGIApplication([
     webapp2.Route(r'/signup', handler=RegisterHandler, name='signup'),
-    webapp2.Route(r'/welcome', handler=ThankyouHandler, name='welcome')
+    webapp2.Route(r'/welcome', handler=WelcomeHandler, name='welcome'),
+    webapp2.Route(r'/signin', handler=SigninHandler, name='signin')
 ], debug=True)
